@@ -4,10 +4,12 @@ import { Loader2 } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import PostCard from '@/components/PostCard';
 import CreatePostForm from '@/components/CreatePostForm';
-import { initialPosts, getUserById, Post } from '@/utils/mockData';
+import { initialPosts, getUserById, Post, Comment, initialComments } from '@/utils/mockData';
+import { toast } from 'sonner';
 
 const Index = () => {
   const [posts, setPosts] = useState<Post[]>(initialPosts);
+  const [comments, setComments] = useState<Comment[]>(initialComments);
   const [loading, setLoading] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   
@@ -28,9 +30,34 @@ const Index = () => {
     }
     
     setPosts([newPost, ...posts]);
+    toast.success("Publication créée avec succès!");
     
     // Scroll to top with animation
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Handle comment creation
+  const handleAddComment = (postId: string, content: string) => {
+    const newComment: Comment = {
+      id: (comments.length + 1).toString(),
+      postId,
+      userId: "1", // Current user ID
+      content,
+      createdAt: new Date(),
+    };
+    
+    setComments([...comments, newComment]);
+    
+    // Update post comments count
+    setPosts(prevPosts => 
+      prevPosts.map(post => 
+        post.id === postId 
+          ? { ...post, comments: post.comments + 1 } 
+          : post
+      )
+    );
+    
+    toast.success("Commentaire ajouté!");
   };
   
   // Simulate loading more posts when scrolling
@@ -94,7 +121,7 @@ const Index = () => {
       
       <main 
         ref={containerRef} 
-        className="container mx-auto px-4 pt-24 pb-20 flex flex-col items-center opacity-0 transition-opacity duration-500"
+        className="container mx-auto px-4 pt-24 pb-20 flex flex-col items-center transition-opacity duration-500"
       >
         <div className="w-full max-w-2xl">
           <CreatePostForm onPostCreated={handleCreatePost} className="mb-6" />
@@ -107,6 +134,7 @@ const Index = () => {
                   post={post} 
                   user={getUserById(post.userId)} 
                   className="animate-in"
+                  onAddComment={handleAddComment}
                 />
               ))
             ) : (

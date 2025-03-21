@@ -1,8 +1,15 @@
-
 export interface User {
   id: string;
   name: string;
   avatar: string;
+}
+
+export interface Comment {
+  id: string;
+  postId: string;
+  userId: string;
+  content: string;
+  createdAt: Date;
 }
 
 export interface Post {
@@ -12,7 +19,7 @@ export interface Post {
   createdAt: Date;
   likes: number;
   comments: number;
-  imageUrl?: string; // Added optional image URL
+  imageUrl?: string;
   translatedContent?: {
     text: string;
     language: string;
@@ -40,6 +47,38 @@ export const users: User[] = [
     id: "4",
     name: "Thomas Petit",
     avatar: "https://i.pravatar.cc/150?img=3",
+  },
+];
+
+// Sample comments
+export const initialComments: Comment[] = [
+  {
+    id: "1",
+    postId: "1",
+    userId: "2",
+    content: "Super post, j'adore !",
+    createdAt: new Date(Date.now() - 1000 * 60 * 30),
+  },
+  {
+    id: "2",
+    postId: "1",
+    userId: "3",
+    content: "Merci pour le partage !",
+    createdAt: new Date(Date.now() - 1000 * 60 * 45),
+  },
+  {
+    id: "3",
+    postId: "2",
+    userId: "4",
+    content: "Félicitations pour ton projet !",
+    createdAt: new Date(Date.now() - 1000 * 60 * 20),
+  },
+  {
+    id: "4",
+    postId: "3",
+    userId: "1",
+    content: "Cette photo est magnifique !",
+    createdAt: new Date(Date.now() - 1000 * 60 * 15),
   },
 ];
 
@@ -92,6 +131,11 @@ export const initialPosts: Post[] = [
 // Find user by ID
 export const getUserById = (userId: string): User => {
   return users.find(user => user.id === userId) || users[0];
+};
+
+// Get comments for a post
+export const getCommentsForPost = (postId: string): Comment[] => {
+  return initialComments.filter(comment => comment.postId === postId);
 };
 
 // Format date

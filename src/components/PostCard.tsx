@@ -1,28 +1,34 @@
 
 import React, { useState } from 'react';
-import { MessageCircle, Heart, Share2, MoreHorizontal, Languages } from 'lucide-react';
+import { MessageCircle, Heart, Share2, MoreHorizontal, Languages, ChevronDown, ChevronUp } from 'lucide-react';
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { useTranslation } from '@/hooks/useTranslation';
-import { Post, User, formatDate } from '@/utils/mockData';
+import { Post, User, formatDate, getCommentsForPost, initialComments } from '@/utils/mockData';
 import { cn } from '@/lib/utils';
 import TranslationOverlay from './TranslationOverlay';
+import CommentList from './CommentList';
+import CommentForm from './CommentForm';
 
 interface PostCardProps {
   post: Post;
   user: User;
   className?: string;
+  onAddComment?: (postId: string, content: string) => void;
 }
 
-const PostCard: React.FC<PostCardProps> = ({ post, user, className }) => {
+const PostCard: React.FC<PostCardProps> = ({ post, user, className, onAddComment }) => {
   const [liked, setLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(post.likes);
   const [showTranslation, setShowTranslation] = useState(false);
   const [translation, setTranslation] = useState<{ text: string; language: string } | null>(null);
   const { translateText, isTranslating } = useTranslation();
+  const [showComments, setShowComments] = useState(false);
+  const [postComments, setPostComments] = useState(getCommentsForPost(post.id));
+  const [commentsCount, setCommentsCount] = useState(post.comments);
 
   const handleLike = () => {
     if (liked) {
@@ -49,6 +55,28 @@ const PostCard: React.FC<PostCardProps> = ({ post, user, className }) => {
     } catch (error) {
       console.error("Translation error:", error);
     }
+  };
+
+  const handleCommentSubmit = (postId: string, content: string) => {
+    if (onAddComment) {
+      onAddComment(postId, content);
+      
+      // Optimistically update UI
+      const newComment = {
+        id: `new-${Date.now()}`,
+        postId,
+        userId: "1", // Current user
+        content,
+        createdAt: new Date()
+      };
+      
+      setPostComments([...postComments, newComment]);
+      setCommentsCount(commentsCount + 1);
+    }
+  };
+
+  const toggleComments = () => {
+    setShowComments(!showComments);
   };
 
   return (
@@ -97,7 +125,14 @@ const PostCard: React.FC<PostCardProps> = ({ post, user, className }) => {
       <div className="px-4 py-1">
         <div className="flex items-center justify-between text-xs text-muted-foreground">
           <span>{likesCount} j'aime</span>
-          <span>{post.comments} commentaires</span>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="text-xs p-0 h-6"
+            onClick={toggleComments}
+          >
+            {commentsCount} commentaires
+          </Button>
         </div>
       </div>
       
@@ -114,7 +149,12 @@ const PostCard: React.FC<PostCardProps> = ({ post, user, className }) => {
           <span className="text-xs">J'aime</span>
         </Button>
         
-        <Button variant="ghost" size="sm" className="flex-1 gap-1 rounded-full">
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          className={cn("flex-1 gap-1 rounded-full", showComments && "bg-primary/10")}
+          onClick={toggleComments}
+        >
           <MessageCircle className="h-4 w-4" />
           <span className="text-xs">Commenter</span>
         </Button>
@@ -135,6 +175,15 @@ const PostCard: React.FC<PostCardProps> = ({ post, user, className }) => {
           <span className="text-xs">{isTranslating ? "..." : "Traduire"}</span>
         </Button>
       </CardFooter>
+      
+      {showComments && (
+        <div className="px-4 py-2 bg-muted/30">
+          <div className="mb-2">
+            <CommentList comments={postComments} />
+          </div>
+          <CommentForm postId={post.id} onSubmit={handleCommentSubmit} />
+        </div>
+      )}
     </Card>
   );
 };
