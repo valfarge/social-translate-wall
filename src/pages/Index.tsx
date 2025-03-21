@@ -73,9 +73,15 @@ const Index = () => {
   // Add entrance animation for the container
   useEffect(() => {
     if (containerRef.current) {
+      containerRef.current.classList.remove('opacity-0');
       containerRef.current.classList.add('animate-fade-in');
     }
   }, []);
+
+  // Debug log to ensure posts are available
+  useEffect(() => {
+    console.log("Current posts:", posts);
+  }, [posts]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950">
@@ -89,14 +95,21 @@ const Index = () => {
           <CreatePostForm onPostCreated={handleCreatePost} className="mb-6" />
           
           <div className="space-y-4">
-            {posts.map((post) => (
-              <PostCard 
-                key={post.id} 
-                post={post} 
-                user={getUserById(post.userId)} 
-                className="animate-in"
-              />
-            ))}
+            {posts.length > 0 ? (
+              posts.map((post) => (
+                <PostCard 
+                  key={post.id} 
+                  post={post} 
+                  user={getUserById(post.userId)} 
+                  className="animate-in"
+                />
+              ))
+            ) : (
+              <div className="text-center py-10">
+                <p className="text-muted-foreground">Aucun message à afficher.</p>
+                <p className="text-sm">Soyez le premier à publier quelque chose !</p>
+              </div>
+            )}
             
             {loading && (
               <div className="flex justify-center py-8">
