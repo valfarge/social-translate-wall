@@ -34,22 +34,19 @@ const Index = () => {
     
     // Simulate API call
     setTimeout(() => {
-      const newPosts = [...posts];
-      
-      // Clone some existing posts and modify them slightly
-      initialPosts.forEach((post, index) => {
-        const clonedPost = { 
+      // Create new posts to append (not replace)
+      const additionalPosts = initialPosts.map((post, index) => {
+        return { 
           ...post,
-          id: `clone-${post.id}-${Date.now()}`,
+          id: `clone-${post.id}-${Date.now()}-${index}`, // Make sure IDs are unique
           createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * (index + 1)),
           likes: Math.floor(Math.random() * 50),
           comments: Math.floor(Math.random() * 10),
         };
-        
-        newPosts.push(clonedPost);
       });
       
-      setPosts(newPosts);
+      // Append the new posts to the existing ones
+      setPosts(prevPosts => [...prevPosts, ...additionalPosts]);
       setLoading(false);
     }, 1500);
   };
