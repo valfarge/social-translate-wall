@@ -12,6 +12,7 @@ export interface Post {
   createdAt: Date;
   likes: number;
   comments: number;
+  imageUrl?: string; // Added optional image URL
   translatedContent?: {
     text: string;
     language: string;
@@ -64,6 +65,7 @@ export const initialPosts: Post[] = [
     id: "3",
     userId: "3",
     content: "Quelle belle journée pour une promenade dans le parc ! Le soleil brille et les oiseaux chantent.",
+    imageUrl: "https://images.unsplash.com/photo-1497436072909-60f360e1d4b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1024",
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 5),
     likes: 32,
     comments: 7,
@@ -80,6 +82,7 @@ export const initialPosts: Post[] = [
     id: "5",
     userId: "1",
     content: "Aujourd'hui, j'ai commencé à apprendre une nouvelle langue. C'est difficile mais passionnant !",
+    imageUrl: "https://images.unsplash.com/photo-1488190211105-8b0e65b80b4e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1024",
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24),
     likes: 21,
     comments: 6,

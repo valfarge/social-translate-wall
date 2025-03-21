@@ -69,9 +69,21 @@ const PostCard: React.FC<PostCardProps> = ({ post, user, className }) => {
       </CardHeader>
       
       <CardContent className="px-4 py-2 relative">
-        <p className="text-sm leading-relaxed whitespace-pre-line animate-in">
-          {post.content}
-        </p>
+        {post.content && (
+          <p className="text-sm leading-relaxed whitespace-pre-line animate-in">
+            {post.content}
+          </p>
+        )}
+        
+        {post.imageUrl && (
+          <div className={cn("mt-2 rounded-lg overflow-hidden", post.content ? "mt-3" : "mt-0")}>
+            <img 
+              src={post.imageUrl} 
+              alt="Post image" 
+              className="w-full object-cover rounded-lg max-h-96" 
+            />
+          </div>
+        )}
         
         {showTranslation && translation && (
           <TranslationOverlay 

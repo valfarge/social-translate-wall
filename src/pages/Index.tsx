@@ -12,7 +12,7 @@ const Index = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   
   // Handle post creation
-  const handleCreatePost = (content: string) => {
+  const handleCreatePost = (content: string, imageUrl?: string) => {
     const newPost: Post = {
       id: (posts.length + 1).toString(),
       userId: "1", // Current user ID
@@ -21,6 +21,11 @@ const Index = () => {
       likes: 0,
       comments: 0,
     };
+    
+    // Add image URL if available
+    if (imageUrl) {
+      newPost.imageUrl = imageUrl;
+    }
     
     setPosts([newPost, ...posts]);
     
